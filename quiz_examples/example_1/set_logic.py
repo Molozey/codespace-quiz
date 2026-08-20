@@ -9,7 +9,7 @@ class Element:
         self._ydx = ydx
 
     def __hash__(self):
-        return id(self)
+        return hash(self._idx)
 
     def __eq__(self, other: "Element"):
         return (self._idx == other._idx) and (self._ydx == other._ydx)

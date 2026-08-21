@@ -55,7 +55,7 @@ def app():
             litestar.Router(
                 path="/",
                 route_handlers=[
-                    # AuthController,
+                    AuthController,
                     UserController,
                     CoursesController
                 ],

@@ -20,7 +20,7 @@ class CoursesWorker:
 
     async def run(self):
         while True:
-            print("Running loop ...")
+            # print("Running loop ...")
             try:
                 obj = self._queue.get(block=False, timeout=.5)
                 user_id, course_id = obj

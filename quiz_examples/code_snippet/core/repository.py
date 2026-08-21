@@ -3,7 +3,8 @@ import uuid
 
 from quiz_examples.code_snippet.models import UserModel
 from quiz_examples.code_snippet.models.course import CourseModel
-
+from faker import Faker
+from functools import lru_cache
 
 class MockedRepository:
     def __init__(self):
@@ -52,3 +53,7 @@ class MockedRepository:
         if self._in_memory_user_credits[user.id] != password:
             raise ValueError("Wrong password")
         return user
+
+    # @lru_cache
+    async def get_all_courses(self) -> list[CourseModel]:
+        pass

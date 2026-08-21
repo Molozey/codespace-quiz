@@ -3,7 +3,7 @@ import uuid
 import pytest
 from faker import Faker
 
-from quiz_examples.example_2.function_module import (
+from quiz_examples.example_3.function_module import (
     BanReason,
     Object,
     RegistrationDetails,

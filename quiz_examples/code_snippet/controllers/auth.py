@@ -1,5 +1,4 @@
-from unittest.mock import Mock
-
+import litestar
 from litestar import Controller
 from litestar import get, post
 
@@ -27,26 +26,31 @@ class AuthController(Controller):
         return user
 
     @post(path="/login/google")
-    async def login_with_google(self):
-        pass
+    async def login_with_google(self) -> None:
+        raise NotImplementedError
 
     @post(path="/register/google")
-    async def register_with_google(self):
-        pass
+    async def register_with_google(self) -> None:
+        raise NotImplementedError
 
     @post(path="/login/github")
-    async def login_with_github(self):
-        pass
+    async def login_with_github(self) -> None:
+        raise NotImplementedError
 
     @post(path="/register/github")
-    async def register_with_github(self):
-        pass
+    async def register_with_github(self) -> None:
+        raise NotImplementedError
 
 
     @post(path="/login/facebook")
-    async def login_with_facebook(self):
-        pass
+    async def login_with_facebook(self) -> None:
+        raise NotImplementedError
 
     @post(path="/register/facebook")
-    async def register_with_facebook(self):
-        pass
+    async def register_with_facebook(self) -> None:
+        raise NotImplementedError
+
+    @get(path="/current-session")
+    async def get_current_session(self, request: litestar.Request) -> dict:
+        _cookie = request.cookies.get("session_id")
+        return {"session_id": _cookie}

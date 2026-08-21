@@ -1,9 +1,9 @@
 import asyncio
 
 import litestar
-from litestar.di import Provide
 import uvicorn
 from litestar import Litestar
+from litestar.di import Provide
 from litestar.logging import LoggingConfig
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import Server
@@ -14,8 +14,10 @@ from quiz_examples.code_snippet.controllers.courses import CoursesController
 from quiz_examples.code_snippet.controllers.user import UserController
 from quiz_examples.code_snippet.core.publisher import MockedPublisher
 from quiz_examples.code_snippet.core.repository import MockedRepository
-from quiz_examples.code_snippet.exceptions.handler import EXCEPTION_HANDLERS
-from quiz_examples.code_snippet.exceptions.handler import handle_all_errors
+from quiz_examples.code_snippet.exceptions.handler import (
+    EXCEPTION_HANDLERS,
+    handle_all_errors,
+)
 
 
 async def _startup(app: Litestar):
@@ -29,13 +31,13 @@ async def _startup(app: Litestar):
 
     app.state.worker_task = asyncio.create_task(worker.run())
 
+
 async def _shutdown():
     pass
 
-def app():
-    _middlewares = [
 
-    ]
+def app():
+    _middlewares = []
     logging_config = LoggingConfig(
         exception_logging_handler=handle_all_errors, configure_root_logger=False
     )
@@ -54,11 +56,7 @@ def app():
         route_handlers=[
             litestar.Router(
                 path="/",
-                route_handlers=[
-                    AuthController,
-                    UserController,
-                    CoursesController
-                ],
+                route_handlers=[AuthController, UserController, CoursesController],
             ),
         ],
         logging_config=logging_config,
@@ -67,16 +65,15 @@ def app():
         on_shutdown=[_shutdown],
         exception_handlers=EXCEPTION_HANDLERS,
         dependencies={
-                    "db_repository": Provide(MockedRepository, use_cache=True),
-                    "publisher": Provide(MockedPublisher, use_cache=True),
-                    "courses_worker": Provide(
-                        CoursesWorker,
-                        use_cache=True
-                    )
-                }
+            "db_repository": Provide(MockedRepository, use_cache=True),
+            "publisher": Provide(MockedPublisher, use_cache=True),
+            "courses_worker": Provide(CoursesWorker, use_cache=True),
+        },
     )
     return _litestar_app
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     uvicorn.run(
         "quiz_examples.code_snippet.run:app",
         host="0.0.0.0",

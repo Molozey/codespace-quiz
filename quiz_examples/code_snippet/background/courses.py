@@ -1,7 +1,7 @@
 import asyncio
 import uuid
-from queue import Queue
-from queue import Empty
+from queue import Empty, Queue
+
 from quiz_examples.code_snippet.core.publisher import MockedPublisher
 from quiz_examples.code_snippet.core.repository import MockedRepository
 
@@ -17,12 +17,11 @@ class CoursesWorker:
         self._queue.put((user_id, course_id))
         print(f"Now queue is: {self._queue.qsize()}")
 
-
     async def run(self):
         while True:
             # print("Running loop ...")
             try:
-                obj = self._queue.get(block=False, timeout=.5)
+                obj = self._queue.get(block=False, timeout=0.5)
                 user_id, course_id = obj
                 print(">" * 10, f"Got task ({user_id}, {course_id}")
             except Empty:
@@ -35,10 +34,10 @@ class CoursesWorker:
             await self.process_course_application(user_id, course_id)
             await asyncio.sleep(10)
 
-
-    async def process_course_application(self, user_id: uuid.UUID, course_id: uuid.UUID):
+    async def process_course_application(
+        self, user_id: uuid.UUID, course_id: uuid.UUID
+    ):
         print("Start processing course application ...")
         _ = await self._db_repository.apply_user_to_course(user_id, course_id)
         _ = await self._publisher.publish_course_application(user_id, course_id)
-
         print("Course application processed")

@@ -1,25 +1,27 @@
 import asyncio
 from abc import ABC, abstractmethod
 
-from quiz_examples.example_4.models import ReceiverResult
-from limits.aio.strategies import MovingWindowRateLimiter
 from limits import RateLimitItemPerSecond
 from limits.aio.storage.memory import MemoryStorage
+from limits.aio.strategies import MovingWindowRateLimiter
+
+from quiz_examples.example_4.models import ReceiverResult
+
 
 class AbstractReceiver(ABC):
     @abstractmethod
     async def receive_message(self, message: dict) -> ReceiverResult:
         pass
 
+
 class AlwaysGoodReceiver(AbstractReceiver):
     async def receive_message(self, message: dict) -> ReceiverResult:
         return ReceiverResult(status=1, reason=None)
 
+
 class LimitedReceiver(AbstractReceiver):
     def __init__(self):
-        self._limiter = MovingWindowRateLimiter(
-            storage=MemoryStorage()
-        )
+        self._limiter = MovingWindowRateLimiter(storage=MemoryStorage())
         self._limit_window = RateLimitItemPerSecond(amount=1)
 
     async def receive_message(self, message: dict) -> ReceiverResult:
@@ -45,8 +47,9 @@ class LimitedConnectionsReceiver(AbstractReceiver):
         finally:
             self._number_of_connections -= 1
 
+
 RECEIVERS_MAP = {
     "1": AlwaysGoodReceiver(),
     "2": LimitedReceiver(),
-    "3": LimitedConnectionsReceiver()
+    "3": LimitedConnectionsReceiver(),
 }

@@ -7,6 +7,7 @@ from quiz_examples.example_4.receiver import RECEIVERS_MAP
 _LONG_WAIT = 2
 _SMALL_WAIT = 0.5
 
+
 class FunctionResult(BaseModel):
     name: str
     long_flag: bool
@@ -15,21 +16,17 @@ class FunctionResult(BaseModel):
         return f"Function [{self.name}] finished with {self.long_flag=}"
 
 
-def time_decorator(
-        method: str
-):
+def time_decorator(method: str):
     pass
 
 
 async def send_feedback(method: str, elapsed_time: float) -> None:
     result = await RECEIVERS_MAP[method].receive_message(
-        message={
-            "elapsed_time": elapsed_time,
-            "params": None
-        }
+        message={"elapsed_time": elapsed_time, "params": None}
     )
     if not result.status:
         print(f"Error: {result.reason}")
+
 
 async def non_stable_function(_index: int, name: str) -> FunctionResult:
     _long_flag = False
@@ -45,12 +42,10 @@ async def non_stable_function(_index: int, name: str) -> FunctionResult:
 
 
 async def main():
-    tasks = [
-        non_stable_function(_index=idx, name=f"Task:{idx}")
-        for idx in range(10)
-    ]
+    tasks = [non_stable_function(_index=idx, name=f"Task:{idx}") for idx in range(10)]
     _ = await asyncio.gather(*tasks)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # two methods: ["1", "2", "3"]
     asyncio.run(main())

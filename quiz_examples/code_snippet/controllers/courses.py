@@ -1,8 +1,6 @@
 import uuid
-from litestar import Controller
-from litestar import get
-from litestar import post
-from litestar import Request
+
+from litestar import Controller, Request, get, post
 from pydantic import BaseModel
 
 from quiz_examples.code_snippet.background.courses import CoursesWorker
@@ -10,6 +8,7 @@ from quiz_examples.code_snippet.core.courses import check_user_have_access_to_co
 from quiz_examples.code_snippet.core.repository import MockedRepository
 from quiz_examples.code_snippet.core.user import extract_user_from_cookies
 from quiz_examples.code_snippet.models.course import CourseModel
+
 
 class AllCoursesModel(BaseModel):
     courses: list[CourseModel]
@@ -20,29 +19,38 @@ class AllCoursesModel(BaseModel):
 
     trending: int
 
+
 class CoursesController(Controller):
     path = "/courses"
 
     @get(path="/{course_id:uuid}/")
-    async def get_course(self, request: Request, course_id: uuid.UUID, db_repository: MockedRepository) -> CourseModel:
-        user = await extract_user_from_cookies(request=request, repository=db_repository)
-        course = await db_repository.get_course(course_id)
-        access = check_user_have_access_to_course(
-            user=user,
-            course=course
+    async def get_course(
+        self, request: Request, course_id: uuid.UUID, db_repository: MockedRepository
+    ) -> CourseModel:
+        user = await extract_user_from_cookies(
+            request=request, repository=db_repository
         )
+        course = await db_repository.get_course(course_id)
+        access = check_user_have_access_to_course(user=user, course=course)
         if access:
             return course
         raise PermissionError("User doesn't have access to this course")
 
     @post(path="/{course_id:uuid}/apply_to_course")  # <-- here
-    async def apply_to_course(self, request: Request, course_id: uuid.UUID, courses_worker: CoursesWorker, db_repository: MockedRepository) -> None:
-        user = await extract_user_from_cookies(request=request, repository=db_repository)
+    async def apply_to_course(
+        self,
+        request: Request,
+        course_id: uuid.UUID,
+        courses_worker: CoursesWorker,
+        db_repository: MockedRepository,
+    ) -> None:
+        user = await extract_user_from_cookies(
+            request=request, repository=db_repository
+        )
 
-        _application = await courses_worker.apply_to_course(user_id=user.id, course_id=course_id)
-
-        return None
-
+        _application = await courses_worker.apply_to_course(
+            user_id=user.id, course_id=course_id
+        )
 
     @get(path="/all-courses")
     async def get_all_courses(self, repository: MockedRepository) -> AllCoursesModel:
@@ -65,6 +73,5 @@ class CoursesController(Controller):
             total=len(_all_courses),
             num_public=_public,
             num_private=_private,
-            trending=_trending
+            trending=_trending,
         )
-

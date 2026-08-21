@@ -1,10 +1,8 @@
 import litestar
-from litestar import Controller
-from litestar import get, post
-
-from quiz_examples.code_snippet.core.repository import MockedRepository
+from litestar import Controller, get, post
 from pydantic import BaseModel
 
+from quiz_examples.code_snippet.core.repository import MockedRepository
 from quiz_examples.code_snippet.models import UserModel
 
 
@@ -12,16 +10,21 @@ class RegisterData(BaseModel):
     email: str
     password: str
 
+
 class AuthController(Controller):
     path = "/auth"
 
     @post(path="/login")
-    async def login(self, data: RegisterData, repository: MockedRepository) -> UserModel:
+    async def login(
+        self, data: RegisterData, repository: MockedRepository
+    ) -> UserModel:
         user = await repository.login_user(email=data.email, password=data.password)
         return user
 
     @post(path="/register")
-    async def register(self, data: RegisterData, repository: MockedRepository) -> UserModel:
+    async def register(
+        self, data: RegisterData, repository: MockedRepository
+    ) -> UserModel:
         user = await repository.register_user(email=data.email, password=data.password)
         return user
 
@@ -40,7 +43,6 @@ class AuthController(Controller):
     @post(path="/register/github")
     async def register_with_github(self) -> None:
         raise NotImplementedError
-
 
     @post(path="/login/facebook")
     async def login_with_facebook(self) -> None:

@@ -1,3 +1,6 @@
 pytest
 faker
 pydantic
+aiohttp
+uvicorn
+litestar
